@@ -9,7 +9,12 @@ export default function Navigation({ user }: { user: User }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+    } catch (e) {
+      console.error(e);
+    }
     localStorage.removeItem("tokoku_user");
     router.push("/login");
   };

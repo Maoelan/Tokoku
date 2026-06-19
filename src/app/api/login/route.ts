@@ -24,7 +24,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "PIN salah" }, { status: 401 });
     }
 
-    return NextResponse.json({ success: true, user });
+    const response = NextResponse.json({ success: true, user });
+    
+    // Set secure HTTP-only cookie for API protection
+    response.cookies.set("tokoku_session", user.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });
