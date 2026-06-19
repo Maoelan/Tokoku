@@ -28,6 +28,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    return NextResponse.json({ error: error.message || "Transaction failed" }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message || "Transaction failed" }, { status: 500 });
   }
 }
