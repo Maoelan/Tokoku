@@ -1,12 +1,21 @@
 import { POST } from "@/app/api/upload/route";
-import { promises as fs } from "fs";
 
-// Mock the fs module
-jest.mock("fs", () => ({
-  promises: {
-    writeFile: jest.fn(),
-  },
-}));
+// Mock Supabase
+jest.mock("@/lib/supabase", () => {
+  return {
+    supabase: {
+      storage: {
+        from: jest.fn().mockReturnValue({
+          upload: jest.fn(),
+          getPublicUrl: jest.fn().mockReturnValue({ data: { publicUrl: "https://mock-supabase.com/image.png" } }),
+        }),
+      },
+    },
+  };
+});
+
+// Import after mocking
+import { supabase } from "@/lib/supabase";
 
 // Mock NextResponse
 jest.mock("next/server", () => {
@@ -22,7 +31,7 @@ jest.mock("next/server", () => {
   };
 });
 
-describe("POST /api/upload - File Upload", () => {
+describe("POST /api/upload - Supabase Storage", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -41,13 +50,14 @@ describe("POST /api/upload - File Upload", () => {
     expect(json.error).toBe("File tidak ditemukan");
   });
 
-  it("should save the file and return 200 with imageUrl if upload is successful", async () => {
+  it("should upload to Supabase and return 200 with imageUrl if successful", async () => {
     const req = {
       formData: async () => ({
         get: (key: string) => {
           if (key === "file") {
             return {
               name: "test-image.png",
+              type: "image/png",
               arrayBuffer: async () => Buffer.from("dummy content"),
             };
           }
@@ -56,27 +66,27 @@ describe("POST /api/upload - File Upload", () => {
       }),
     } as unknown as Request;
 
-    // Ensure writeFile resolves successfully
-    (fs.writeFile as jest.Mock).mockResolvedValueOnce(undefined);
+    // Ensure upload resolves successfully
+    const mockUpload = supabase.storage.from("products").upload as jest.Mock;
+    mockUpload.mockResolvedValueOnce({ data: { path: "test.png" }, error: null });
 
     const res = await POST(req);
     const json = await res.json();
 
-    expect(fs.writeFile).toHaveBeenCalledTimes(1);
-    
-    // Verify the URL format matches the expected output
+    expect(mockUpload).toHaveBeenCalledTimes(1);
     expect(res.status).toBe(200);
     expect(json.success).toBe(true);
-    expect(json.imageUrl).toMatch(/^\/uploads\/\d+-\d+\.png$/);
+    expect(json.imageUrl).toBe("https://mock-supabase.com/image.png");
   });
 
-  it("should return 500 if fs.writeFile throws an error", async () => {
+  it("should return 500 if Supabase upload fails", async () => {
     const req = {
       formData: async () => ({
         get: (key: string) => {
           if (key === "file") {
             return {
               name: "test-image.png",
+              type: "image/png",
               arrayBuffer: async () => Buffer.from("dummy content"),
             };
           }
@@ -85,17 +95,17 @@ describe("POST /api/upload - File Upload", () => {
       }),
     } as unknown as Request;
 
-    // Simulate a filesystem error (e.g. permission denied)
-    (fs.writeFile as jest.Mock).mockRejectedValueOnce(new Error("Permission denied"));
+    // Simulate Supabase error
+    const mockUpload = supabase.storage.from("products").upload as jest.Mock;
+    mockUpload.mockResolvedValueOnce({ data: null, error: new Error("Upload limit reached") });
 
-    // Temporarily suppress console.error to keep test output clean
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     const res = await POST(req);
     const json = await res.json();
 
     expect(res.status).toBe(500);
-    expect(json.error).toBe("Gagal mengupload gambar");
+    expect(json.error).toBe("Gagal mengupload gambar ke cloud");
 
     consoleSpy.mockRestore();
   });

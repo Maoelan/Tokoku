@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { promises as fs } from "fs";
+import { supabase } from "@/lib/supabase";
 import path from "path";
 
 export async function POST(req: Request) {
@@ -17,23 +17,31 @@ export async function POST(req: Request) {
     const ext = path.extname(file.name);
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     
-    // Define the path to save the file
-    // Note: In production on Vercel, this local folder is read-only.
-    // For production, you should use Supabase Storage.
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    const filePath = path.join(uploadDir, fileName);
+    // Upload to Supabase Storage bucket named 'products'
+    const { data, error } = await supabase
+      .storage
+      .from("products")
+      .upload(fileName, buffer, {
+        contentType: file.type,
+        upsert: false,
+      });
 
-    // Save file
-    await fs.writeFile(filePath, buffer);
+    if (error) {
+      console.error("Supabase storage error:", error);
+      return NextResponse.json({ error: "Gagal mengupload gambar ke cloud" }, { status: 500 });
+    }
 
-    // Return the URL that can be used to access the image
-    const imageUrl = `/uploads/${fileName}`;
+    // Get the public URL
+    const { data: publicUrlData } = supabase
+      .storage
+      .from("products")
+      .getPublicUrl(fileName);
 
-    return NextResponse.json({ success: true, imageUrl });
+    return NextResponse.json({ success: true, imageUrl: publicUrlData.publicUrl });
   } catch (error: unknown) {
     console.error("Upload error:", error);
     return NextResponse.json(
-      { error: "Gagal mengupload gambar" },
+      { error: "Gagal memproses gambar" },
       { status: 500 }
     );
   }
