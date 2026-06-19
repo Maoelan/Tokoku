@@ -194,20 +194,24 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className={styles.footer} style={{ padding: "2rem 1rem", marginTop: "2rem" }}>
-        <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
-          <img
-            src="/images/logo.png"
-            alt="Logo Tokoku Sintung"
-            className={styles.footerLogo}
-            style={{ width: "40px", height: "40px", padding: "0.2rem", margin: 0 }}
-          />
-          <div style={{ fontWeight: 600, fontSize: "1.125rem", color: "var(--text-main)" }}>
-            Tokoku Sintung
+      <footer className={styles.footer} style={{ padding: '1.5rem 1rem' }}>
+        <div className={`container`} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '0.75rem', color: 'var(--text-muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <img
+              src="/images/logo.png"
+              alt="Logo Tokoku Sintung"
+              className={styles.footerLogo}
+              style={{ width: '32px', height: '32px', padding: '0.1rem' }}
+            />
+            <div style={{ fontWeight: 700, fontSize: "1rem", color: 'var(--text-main)' }}>
+              Tokoku Sintung
+            </div>
           </div>
-          <div style={{ color: "var(--text-muted)", opacity: 0.5 }}>|</div>
-          <div style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
-            &copy; {new Date().getFullYear()} Dibuat oleh Maulana Muhammad
+          
+          <div style={{ opacity: 0.5, fontSize: "0.8rem" }}>•</div>
+
+          <div style={{ fontSize: "0.875rem" }}>
+            &copy; {new Date().getFullYear()} Dibuat dengan ❤️ oleh Maulana Muhammad
           </div>
         </div>
       </footer>
