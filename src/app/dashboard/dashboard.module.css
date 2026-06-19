@@ -1,0 +1,27 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.mainContent {
+  flex: 1;
+  padding: 1rem;
+  padding-bottom: 5rem; /* space for bottom nav on mobile */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+  .layout {
+    flex-direction: row;
+  }
+  
+  .mainContent {
+    padding: 2rem;
+    padding-left: 280px; /* space for sidebar */
+    padding-bottom: 2rem;
+  }
+}

@@ -123,3 +123,53 @@ export const products: Product[] = [
     is_active: true,
   },
 ];
+
+export type UserRole = 'admin' | 'operator';
+
+export type User = {
+  id: string;
+  name: string;
+  role: UserRole;
+};
+
+export type SaleItem = {
+  id: number;
+  sale_id: number;
+  product_id: number;
+  quantity: number;
+  price_at_sale: number;
+  subtotal: number;
+  product_name?: string; // For easy UI rendering
+};
+
+export type Sale = {
+  id: number;
+  user_id: string;
+  total_amount: number;
+  total_items: number;
+  notes: string;
+  created_at: string;
+  items: SaleItem[];
+};
+
+export const mockUsers: User[] = [
+  { id: '1', name: 'Mamah', role: 'operator' },
+  { id: '2', name: 'Bapak', role: 'operator' },
+  { id: '3', name: 'Admin (Developer)', role: 'admin' },
+];
+
+export const mockSales: Sale[] = [
+  {
+    id: 1,
+    user_id: '1',
+    total_amount: 32000,
+    total_items: 6,
+    notes: '',
+    created_at: new Date().toISOString(),
+    items: [
+      { id: 1, sale_id: 1, product_id: 2, quantity: 3, price_at_sale: 3000, subtotal: 9000 },
+      { id: 2, sale_id: 1, product_id: 3, quantity: 1, price_at_sale: 18000, subtotal: 18000 },
+      { id: 3, sale_id: 1, product_id: 6, quantity: 2, price_at_sale: 2500, subtotal: 5000 },
+    ]
+  }
+];

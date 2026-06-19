@@ -1,0 +1,153 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.greeting {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.date {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.statCard {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.iconSales {
+  background-color: var(--success-bg);
+  color: var(--success);
+}
+
+.iconItems {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: #2196F3;
+}
+
+.iconAlert {
+  background-color: var(--warning-bg);
+  color: var(--warning);
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.ctaContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: var(--primary);
+  color: white;
+  padding: 1.25rem 2rem;
+  border-radius: var(--radius-full);
+  font-size: 1.25rem;
+  font-weight: 700;
+  box-shadow: 0 8px 16px rgba(255, 87, 34, 0.2);
+  transition: var(--transition);
+  width: 100%;
+  max-width: 400px;
+}
+
+.ctaButton:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(255, 87, 34, 0.3);
+}
+
+.lowStockSection {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stockList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stockItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: var(--bg-color);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+}
+
+.stockName {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.stockStatus {
+  font-weight: 700;
+  color: var(--danger);
+  background-color: var(--danger-bg);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+}
