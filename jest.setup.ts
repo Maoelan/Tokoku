@@ -4,31 +4,41 @@ import '@testing-library/jest-dom';
 if (typeof global.Request === 'undefined') {
   global.Request = class Request {
     public method: string;
-    private _body: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private _body: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(input: string | Request, init?: any) {
-      this.method = init?.method || 'GET';
-      this._body = init?.body || '';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.method = (init as any)?.method || 'GET';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this._body = (init as any)?.body || '';
     }
     async json() {
       return JSON.parse(this._body);
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 }
 
 if (typeof global.Response === 'undefined') {
   global.Response = class Response {
     public status: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private _body: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(body?: any, init?: any) {
       this._body = body;
-      this.status = init?.status || 200;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.status = (init as any)?.status || 200;
     }
     async json() {
       return typeof this._body === 'string' ? JSON.parse(this._body) : this._body;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static json(data: any, init?: any) {
       return new Response(JSON.stringify(data), init);
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 }
 
