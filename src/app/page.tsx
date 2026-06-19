@@ -206,20 +206,9 @@ export default function Home() {
           <div style={{ fontWeight: 600, fontSize: "1.25rem" }}>
             Tokoku Sintung
           </div>
-          <div>📍 Lokasi: Sintung, Lombok Tengah</div>
-          <div>🕐 Jam Buka: 10.00 - 20.00</div>
-          <div>📞 WhatsApp: 0817-578-6554</div>
-          <a
-            href="https://wa.me/628175786553"
-            style={{
-              color: "var(--primary-hover)",
-              fontWeight: 500,
-              marginTop: "0.5rem",
-              display: "inline-block",
-            }}
-          >
-            Kirim Pesan via WhatsApp
-          </a>
+          <div style={{ fontSize: "0.875rem", marginTop: "1rem" }}>
+            &copy; {new Date().getFullYear()} Dibuat dengan ❤️ oleh Maulana Muhammad
+          </div>
         </div>
       </footer>
     </main>
