@@ -31,8 +31,13 @@ jobs:
 
       - name: Run Unit & Integration Tests
         run: npm run test
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-key"
 
       - name: Verify Build
         run: npm run build
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres # Dummy DB URL just for build typechecking
+          NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-key"
