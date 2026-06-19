@@ -1,25 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
-import { mockUsers, User } from "@/lib/data";
+
+type User = {
+  id: string;
+  name: string;
+  role: string;
+};
 
 export default function Login() {
   const router = useRouter();
   const [pin, setPin] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const res = await fetch("/api/users");
+        const data = await res.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    }
+    fetchUsers();
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate generic operator login for demo if PIN is entered
-    if (pin) {
-      handleDemoLogin(mockUsers[0]);
+    if (pin && users.length > 0) {
+      handleDemoLogin(users[0]);
     }
   };
 
   const handleDemoLogin = (user: User) => {
-    // In a real app, we'd use Context or cookies.
-    // For this frontend-only mock, we'll store in localStorage
     if (typeof window !== "undefined") {
       localStorage.setItem("tokoku_user", JSON.stringify(user));
     }
@@ -53,7 +69,7 @@ export default function Login() {
 
         <div className={styles.demoSwitcher}>
           <div className={styles.demoTitle}>Demo Akses Cepat</div>
-          {mockUsers.map((user) => (
+          {users.map((user) => (
             <button
               key={user.id}
               className={styles.demoBtn}

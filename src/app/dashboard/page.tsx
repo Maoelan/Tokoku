@@ -3,16 +3,59 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./summary.module.css";
-import { mockSales, products, User } from "@/lib/data";
+
+type User = {
+  id: string;
+  name: string;
+  role: string;
+};
+
+type SummaryData = {
+  salesToday: number;
+  itemsToday: number;
+  lowStockCount: number;
+};
+
+type Product = {
+  id: number;
+  name: string;
+  unit: string;
+  stock: number;
+  lowStockThreshold: number;
+};
 
 export default function DashboardSummary() {
   const [user, setUser] = useState<User | null>(null);
+  const [summary, setSummary] = useState<SummaryData | null>(null);
+  const [lowStockItems, setLowStockItems] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("tokoku_user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+
+    async function fetchData() {
+      try {
+        const [summaryRes, productsRes] = await Promise.all([
+          fetch("/api/dashboard/summary"),
+          fetch("/api/products"),
+        ]);
+        const summaryData = await summaryRes.json();
+        const productsData = await productsRes.json();
+
+        setSummary(summaryData);
+        setLowStockItems(
+          productsData.filter((p: Product) => p.stock <= p.lowStockThreshold)
+        );
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
 
   const formatRupiah = (amount: number) => {
@@ -22,13 +65,6 @@ export default function DashboardSummary() {
       minimumFractionDigits: 0,
     }).format(amount);
   };
-
-  // Calculate today's stats from mock data
-  const todaySales = mockSales.reduce((sum, sale) => sum + sale.total_amount, 0);
-  const todayItems = mockSales.reduce((sum, sale) => sum + sale.total_items, 0);
-  
-  // Find low stock items
-  const lowStockItems = products.filter(p => p.stock <= p.low_stock_threshold);
 
   if (!user) return null;
 
@@ -51,7 +87,9 @@ export default function DashboardSummary() {
           <div className={`${styles.statIcon} ${styles.iconSales}`}>💰</div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Penjualan Hari Ini</span>
-            <span className={styles.statValue}>{formatRupiah(todaySales)}</span>
+            <span className={styles.statValue}>
+              {loading ? "..." : formatRupiah(summary?.salesToday ?? 0)}
+            </span>
           </div>
         </div>
 
@@ -59,7 +97,9 @@ export default function DashboardSummary() {
           <div className={`${styles.statIcon} ${styles.iconItems}`}>📦</div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Barang Terjual</span>
-            <span className={styles.statValue}>{todayItems} item</span>
+            <span className={styles.statValue}>
+              {loading ? "..." : `${summary?.itemsToday ?? 0} item`}
+            </span>
           </div>
         </div>
 
@@ -67,7 +107,9 @@ export default function DashboardSummary() {
           <div className={`${styles.statIcon} ${styles.iconAlert}`}>⚠️</div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Stok Hampir Habis</span>
-            <span className={styles.statValue}>{lowStockItems.length} barang</span>
+            <span className={styles.statValue}>
+              {loading ? "..." : `${summary?.lowStockCount ?? 0} barang`}
+            </span>
           </div>
         </div>
       </div>
@@ -84,7 +126,7 @@ export default function DashboardSummary() {
             <span>⚠️</span> Perlu Restok Segera
           </h2>
           <div className={styles.stockList}>
-            {lowStockItems.map(item => (
+            {lowStockItems.map((item) => (
               <div key={item.id} className={styles.stockItem}>
                 <span className={styles.stockName}>{item.name}</span>
                 <span className={styles.stockStatus}>

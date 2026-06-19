@@ -28,3 +28,30 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { name, categoryId, unit, stock, priceSell, priceBuy, lowStockThreshold, imageUrl } = body;
+
+    if (!name || !unit || priceSell === undefined) {
+      return NextResponse.json({ error: "Nama, satuan, dan harga jual wajib diisi" }, { status: 400 });
+    }
+
+    const [newProduct] = await db.insert(products).values({
+      name,
+      categoryId: categoryId || null,
+      unit,
+      stock: stock || 0,
+      priceSell,
+      priceBuy: priceBuy || null,
+      imageUrl: imageUrl || null,
+      lowStockThreshold: lowStockThreshold || 5,
+    }).returning({ id: products.id });
+
+    return NextResponse.json({ success: true, id: newProduct.id });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Failed to create product" }, { status: 500 });
+  }
+}
+

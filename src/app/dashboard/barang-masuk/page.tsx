@@ -1,26 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./restok.module.css";
-import { products } from "@/lib/data";
+
+type Product = {
+  id: number;
+  name: string;
+  unit: string;
+  stock: number;
+};
 
 export default function InputBarangMasuk() {
   const [selectedProductId, setSelectedProductId] = useState<number | "">("");
   const [quantity, setQuantity] = useState<number | "">("");
   const [supplier, setSupplier] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const selectedProduct = products.find(p => p.id === selectedProductId);
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch("/api/products");
+        const data = await res.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
-  const handleSimpan = (e: React.FormEvent) => {
+  const selectedProduct = products.find((p) => p.id === selectedProductId);
+
+  const handleSimpan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProductId || !quantity) return;
-    
-    alert(`✅ Berhasil menambahkan ${quantity} stok untuk ${selectedProduct?.name}! (Mock Frontend)`);
-    
-    // Reset form
-    setSelectedProductId("");
-    setQuantity("");
-    setSupplier("");
+
+    const storedUser = localStorage.getItem("tokoku_user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/restock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: selectedProductId,
+          userId: user?.id || null,
+          quantity: Number(quantity),
+          supplier,
+          notes: "",
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        alert(`✅ Berhasil menambahkan ${quantity} stok untuk ${selectedProduct?.name}!`);
+        setSelectedProductId("");
+        setQuantity("");
+        setSupplier("");
+        // Refresh products to get updated stock
+        const updatedProducts = await fetch("/api/products");
+        setProducts(await updatedProducts.json());
+      } else {
+        alert("❌ Gagal menyimpan: " + (result.error || "Unknown error"));
+      }
+    } catch (error) {
+      alert("❌ Gagal menyimpan barang masuk. Coba lagi.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -38,9 +91,12 @@ export default function InputBarangMasuk() {
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(Number(e.target.value) || "")}
               required
+              disabled={loading}
             >
-              <option value="" disabled>-- Cari dan Pilih Barang --</option>
-              {products.map(p => (
+              <option value="" disabled>
+                {loading ? "Memuat barang..." : "-- Cari dan Pilih Barang --"}
+              </option>
+              {products.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
@@ -49,7 +105,9 @@ export default function InputBarangMasuk() {
           {selectedProduct && (
             <div className={styles.productInfo}>
               <div className={styles.productName}>{selectedProduct.name}</div>
-              <div className={styles.productStock}>Stok saat ini: <strong>{selectedProduct.stock} {selectedProduct.unit}</strong></div>
+              <div className={styles.productStock}>
+                Stok saat ini: <strong>{selectedProduct.stock} {selectedProduct.unit}</strong>
+              </div>
             </div>
           )}
 
@@ -80,9 +138,9 @@ export default function InputBarangMasuk() {
           <button
             type="submit"
             className={styles.submitBtn}
-            disabled={!selectedProductId || !quantity}
+            disabled={!selectedProductId || !quantity || saving}
           >
-            Simpan Barang Masuk
+            {saving ? "Menyimpan..." : "Simpan Barang Masuk"}
           </button>
         </form>
       </div>

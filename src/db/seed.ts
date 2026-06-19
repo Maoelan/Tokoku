@@ -1,6 +1,6 @@
 import { db } from "./index";
-import { users, categories, products, sales, saleItems } from "./schema";
-import { mockUsers, categories as mockCategories, products as mockProducts, mockSales } from "../lib/data";
+import { users, categories, products } from "./schema";
+import { mockUsers, categories as mockCategories, products as mockProducts } from "../lib/data";
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: ".env.local" });
@@ -38,7 +38,6 @@ async function seed() {
         unit: p.unit,
         stock: p.stock,
         priceSell: p.price_sell,
-        priceBuy: p.price_buy || null,
         imageUrl: p.image_url || null,
         lowStockThreshold: p.low_stock_threshold,
       }))

@@ -1,20 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./page.module.css";
-import { categories, products, Product } from "@/lib/data";
+
+type Product = {
+  id: number;
+  name: string;
+  categoryId: number;
+  categoryName: string;
+  unit: string;
+  stock: number;
+  priceSell: number;
+  imageUrl: string | null;
+  lowStockThreshold: number;
+  showOnLanding: boolean;
+  isActive: boolean;
+};
+
+type Category = {
+  id: number;
+  name: string;
+  sortOrder: number;
+};
 
 export default function Home() {
-  const [activeCategoryId, setActiveCategoryId] = useState<number>(1); // 1 = Semua
+  const [activeCategoryId, setActiveCategoryId] = useState<number | "all">("all");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          fetch("/api/products"),
+          fetch("/api/categories"),
+        ]);
+        const productsData = await productsRes.json();
+        const categoriesData = await categoriesRes.json();
+        setProducts(productsData);
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   const filteredProducts =
-    activeCategoryId === 1
-      ? products.filter((p) => p.show_on_landing && p.is_active)
+    activeCategoryId === "all"
+      ? products.filter((p) => p.showOnLanding && p.isActive)
       : products.filter(
           (p) =>
-            p.category_id === activeCategoryId &&
-            p.show_on_landing &&
-            p.is_active,
+            p.categoryId === activeCategoryId &&
+            p.showOnLanding &&
+            p.isActive,
         );
 
   const formatRupiah = (price: number) => {
@@ -33,7 +75,7 @@ export default function Home() {
         </span>
       );
     }
-    if (product.stock <= product.low_stock_threshold) {
+    if (product.stock <= product.lowStockThreshold) {
       return (
         <span className={`${styles.badge} ${styles.badgeWarning}`}>
           🟡 Stok Terbatas
@@ -91,6 +133,12 @@ export default function Home() {
 
         {/* Filters */}
         <div className={styles.filters}>
+          <button
+            className={`${styles.filterBtn} ${activeCategoryId === "all" ? styles.filterBtnActive : ""}`}
+            onClick={() => setActiveCategoryId("all")}
+          >
+            Semua
+          </button>
           {categories.map((cat) => (
             <button
               key={cat.id}
@@ -102,38 +150,46 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Product Grid */}
-        <div className={styles.grid}>
-          {filteredProducts.map((product) => (
-            <div key={product.id} className={styles.card}>
-              <div className={styles.cardImgPlaceholder}>
-                {product.image_url ? (
-                  <img src={product.image_url} alt={product.name} />
-                ) : (
-                  <span>📦</span>
-                )}
-              </div>
-              <div className={styles.cardContent}>
-                <h3 className={styles.cardTitle}>{product.name}</h3>
-                {renderStockBadge(product)}
-                <div className={styles.cardPrice}>
-                  {formatRupiah(product.price_sell)}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredProducts.length === 0 && (
-          <div
-            style={{
-              textAlign: "center",
-              color: "var(--text-muted)",
-              marginTop: "2rem",
-            }}
-          >
-            Belum ada produk di kategori ini.
+        {loading ? (
+          <div style={{ textAlign: "center", color: "var(--text-muted)", marginTop: "2rem" }}>
+            Memuat produk...
           </div>
+        ) : (
+          <>
+            {/* Product Grid */}
+            <div className={styles.grid}>
+              {filteredProducts.map((product) => (
+                <div key={product.id} className={styles.card}>
+                  <div className={styles.cardImgPlaceholder}>
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.name} />
+                    ) : (
+                      <span>📦</span>
+                    )}
+                  </div>
+                  <div className={styles.cardContent}>
+                    <h3 className={styles.cardTitle}>{product.name}</h3>
+                    {renderStockBadge(product)}
+                    <div className={styles.cardPrice}>
+                      {formatRupiah(product.priceSell)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredProducts.length === 0 && (
+              <div
+                style={{
+                  textAlign: "center",
+                  color: "var(--text-muted)",
+                  marginTop: "2rem",
+                }}
+              >
+                Belum ada produk di kategori ini.
+              </div>
+            )}
+          </>
         )}
       </section>
 

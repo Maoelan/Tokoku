@@ -29,8 +29,21 @@ export async function POST(req: Request) {
         notes: notes || "",
       }).returning({ id: sales.id });
 
-      // 2. Create sale items and deduct stock
+      // 2. Validate stock and create sale items
       for (const item of items) {
+        // Fetch current stock
+        const [productRecord] = await tx.select({ stock: products.stock, name: products.name })
+          .from(products)
+          .where(eq(products.id, item.productId));
+
+        if (!productRecord) {
+          throw new Error(`Product ID ${item.productId} tidak ditemukan.`);
+        }
+
+        if (productRecord.stock < item.quantity) {
+          throw new Error(`Stok ${productRecord.name} tidak mencukupi. Sisa: ${productRecord.stock}, diminta: ${item.quantity}`);
+        }
+
         await tx.insert(saleItems).values({
           saleId: newSale.id,
           productId: item.productId,
@@ -48,7 +61,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, saleId: newSaleId });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Transaction failed" }, { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Transaction failed";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
