@@ -1,9 +1,10 @@
 import { pgTable, serial, text, integer, timestamp, varchar, boolean } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
-  id: text("id").primaryKey(), // using text since we use mock ID like "1" for now
+  id: text("id").primaryKey(), 
   name: varchar("name", { length: 100 }).notNull(),
   email: varchar("email", { length: 255 }),
+  pin: varchar("pin", { length: 50 }).notNull().default("123456"),
   role: varchar("role", { length: 50 }).notNull(), // 'admin' | 'operator'
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

@@ -1,45 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
-
-type User = {
-  id: string;
-  name: string;
-  role: string;
-};
 
 export default function Login() {
   const router = useRouter();
   const [pin, setPin] = useState("");
-  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const res = await fetch("/api/users");
-        const data = await res.json();
-        setUsers(data);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    }
-    fetchUsers();
-  }, []);
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin && users.length > 0) {
-      handleDemoLogin(users[0]);
-    }
-  };
+    if (!pin) return;
 
-  const handleDemoLogin = (user: User) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("tokoku_user", JSON.stringify(user));
+    setLoading(true);
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("tokoku_user", JSON.stringify(data.user));
+        }
+        router.push("/dashboard");
+      } else {
+        alert("❌ " + data.error);
+        setPin("");
+      }
+    } catch (error) {
+      alert("Terjadi kesalahan sistem.");
+    } finally {
+      setLoading(false);
     }
-    router.push("/dashboard");
   };
 
   return (
@@ -60,26 +57,14 @@ export default function Login() {
               placeholder="Masukkan PIN Anda"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
+              disabled={loading}
+              autoComplete="off"
             />
           </div>
-          <button type="submit" className={styles.button}>
-            Masuk
+          <button type="submit" className={styles.button} disabled={loading}>
+            {loading ? "Memeriksa..." : "Masuk"}
           </button>
         </form>
-
-        <div className={styles.demoSwitcher}>
-          <div className={styles.demoTitle}>Demo Akses Cepat</div>
-          {users.map((user) => (
-            <button
-              key={user.id}
-              className={styles.demoBtn}
-              onClick={() => handleDemoLogin(user)}
-              type="button"
-            >
-              Masuk sebagai {user.name} ({user.role})
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
