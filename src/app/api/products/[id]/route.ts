@@ -29,7 +29,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       .where(eq(products.id, productId));
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json({ error: error.message || "Failed to update product" }, { status: 500 });
   }
 }
@@ -44,7 +44,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
       .where(eq(products.id, productId));
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json({ error: error.message || "Failed to delete product" }, { status: 500 });
   }
 }

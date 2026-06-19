@@ -5,9 +5,9 @@ import { db } from "@/db";
 jest.mock('next/server', () => {
   return {
     NextResponse: {
-      json: (body: any, init?: any) => {
+      json: (body: unknown, init?: unknown) => {
         return {
-          status: init?.status || 200,
+          status: (init as unknown)?.status || 200,
           json: async () => body,
         };
       },

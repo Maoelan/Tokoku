@@ -21,7 +21,7 @@ import { supabase } from "@/lib/supabase";
 jest.mock("next/server", () => {
   return {
     NextResponse: {
-      json: (body: any, init?: any) => {
+      json: (body: unknown, init?: unknown) => {
         return {
           status: init?.status || 200,
           json: async () => body,
