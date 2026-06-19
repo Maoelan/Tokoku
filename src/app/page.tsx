@@ -194,20 +194,20 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className={styles.footer}>
-        <div className={`container ${styles.footerContent}`}>
-          <div className={styles.footerLogoContainer}>
-            <img
-              src="/images/logo.png"
-              alt="Logo Tokoku Sintung"
-              className={styles.footerLogo}
-            />
-          </div>
-          <div style={{ fontWeight: 600, fontSize: "1.25rem" }}>
+      <footer className={styles.footer} style={{ padding: "2rem 1rem", marginTop: "2rem" }}>
+        <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+          <img
+            src="/images/logo.png"
+            alt="Logo Tokoku Sintung"
+            className={styles.footerLogo}
+            style={{ width: "40px", height: "40px", padding: "0.2rem", margin: 0 }}
+          />
+          <div style={{ fontWeight: 600, fontSize: "1.125rem", color: "var(--text-main)" }}>
             Tokoku Sintung
           </div>
-          <div style={{ fontSize: "0.875rem", marginTop: "1rem" }}>
-            &copy; {new Date().getFullYear()} Dibuat dengan ❤️ oleh Maulana Muhammad
+          <div style={{ color: "var(--text-muted)", opacity: 0.5 }}>|</div>
+          <div style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
+            &copy; {new Date().getFullYear()} Dibuat oleh Maulana Muhammad
           </div>
         </div>
       </footer>
