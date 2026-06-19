@@ -27,23 +27,7 @@
   --transition: all 0.2s ease-in-out;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-color: #121212;
-    --surface: #1E1E1E;
-    --text-main: #E0E0E0;
-    --text-muted: #9E9E9E;
-    --border: #333333;
-    
-    --success-bg: #1B5E20;
-    --warning-bg: #FF8F00;
-    --danger-bg: #B71C1C;
 
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
-    --shadow-lg: 0 10px 15px rgba(0,0,0,0.4);
-  }
-}
 
 * {
   box-sizing: border-box;
