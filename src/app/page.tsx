@@ -193,49 +193,47 @@ export default function Home() {
         )}
       </section>
 
-      {/* Location Section */}
-      <section className={`${styles.catalog} container`} style={{ marginTop: "1rem" }}>
-        <h2 className={styles.sectionTitle}>📍 Lokasi Kami</h2>
-        <div style={{ borderRadius: "12px", overflow: "hidden", boxShadow: "var(--card-shadow)" }}>
-          <iframe 
-            src="https://maps.google.com/maps?q=Sintung,%20Pringgarata,%20Lombok%20Tengah&t=&z=14&ie=UTF8&iwloc=&output=embed" 
-            width="100%" 
-            height="350" 
-            style={{ border: 0, display: "block" }} 
-            allowFullScreen 
-            loading="lazy" 
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className={styles.footer}>
         <div className={`container ${styles.footerContent}`}>
-          <div className={styles.footerLogoContainer}>
-            <img
-              src="/images/logo.png"
-              alt="Logo Tokoku Sintung"
-              className={styles.footerLogo}
-            />
+          <div className={styles.footerInfo}>
+            <div className={styles.footerLogoContainer}>
+              <img
+                src="/images/logo.png"
+                alt="Logo Tokoku Sintung"
+                className={styles.footerLogo}
+              />
+            </div>
+            <div style={{ fontWeight: 600, fontSize: "1.25rem", color: "var(--text-main)" }}>
+              Tokoku Sintung
+            </div>
+            <div>📍 Lokasi: Sintung, Pringgarata, Lombok Tengah</div>
+            <div>🕐 Jam Buka: 10.00 - 20.00 WITA</div>
+            <div>📞 WhatsApp: 0817-578-6554</div>
+            <a
+              href="https://wa.me/628175786553"
+              style={{
+                color: "var(--primary-hover)",
+                fontWeight: 600,
+                marginTop: "0.5rem",
+                display: "inline-block",
+              }}
+            >
+              Kirim Pesan via WhatsApp
+            </a>
           </div>
-          <div style={{ fontWeight: 600, fontSize: "1.25rem" }}>
-            Tokoku Sintung
+
+          <div className={styles.footerMap}>
+            <iframe 
+              src="https://maps.google.com/maps?q=Sintung,%20Pringgarata,%20Lombok%20Tengah&t=&z=14&ie=UTF8&iwloc=&output=embed" 
+              width="100%" 
+              height="250" 
+              style={{ border: 0, display: "block" }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
-          <div>📍 Lokasi: Sintung, Lombok Tengah</div>
-          <div>🕐 Jam Buka: 10.00 - 20.00</div>
-          <div>📞 WhatsApp: 0817-578-6554</div>
-          <a
-            href="https://wa.me/628175786553"
-            style={{
-              color: "var(--primary-hover)",
-              fontWeight: 500,
-              marginTop: "0.5rem",
-              display: "inline-block",
-            }}
-          >
-            Kirim Pesan via WhatsApp
-          </a>
         </div>
       </footer>
     </main>
