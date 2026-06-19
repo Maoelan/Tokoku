@@ -52,7 +52,14 @@ export default function Home() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className="container">
-          <h1>🏪 Tokoku Sintung</h1>
+          <div className={styles.logoContainer}>
+            <img
+              src="/images/logo.png"
+              alt="Logo Tokoku Sintung"
+              className={styles.mainLogo}
+            />
+          </div>
+          <h1>Tokoku Sintung</h1>
           <p>
             Melayani kebutuhan sehari-hari warga Sintung dan sekitarnya dengan
             harga terbaik.
@@ -133,6 +140,13 @@ export default function Home() {
       {/* Footer */}
       <footer className={styles.footer}>
         <div className={`container ${styles.footerContent}`}>
+          <div className={styles.footerLogoContainer}>
+            <img
+              src="/images/logo.png"
+              alt="Logo Tokoku Sintung"
+              className={styles.footerLogo}
+            />
+          </div>
           <div style={{ fontWeight: 600, fontSize: "1.25rem" }}>
             Tokoku Sintung
           </div>
