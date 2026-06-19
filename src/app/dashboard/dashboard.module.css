@@ -8,7 +8,8 @@
 .mainContent {
   flex: 1;
   padding: 1rem;
-  padding-bottom: 5rem; /* space for bottom nav on mobile */
+  padding-bottom: 8rem; /* significantly increase padding to guarantee no cutoff */
+  padding-top: 5rem; /* space for mobile header */
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
@@ -23,5 +24,6 @@
     padding: 2rem;
     padding-left: 280px; /* space for sidebar */
     padding-bottom: 2rem;
+    padding-top: 2rem;
   }
 }

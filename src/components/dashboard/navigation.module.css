@@ -55,7 +55,50 @@
   display: none; /* hidden on mobile */
 }
 
+.userInfo {
+  display: none; /* hidden on mobile */
+}
+
+/* Mobile Top Header */
+.mobileHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.mobileLogo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: white;
+  padding: 2px;
+}
+
+.mobileLogoutBtn {
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
 @media (min-width: 768px) {
+  .mobileHeader {
+    display: none;
+  }
+
   .nav {
     top: 0;
     bottom: 0;

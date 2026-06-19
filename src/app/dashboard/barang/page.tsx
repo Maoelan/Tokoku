@@ -87,17 +87,21 @@ export default function DaftarBarang() {
 
               return (
                 <tr key={product.id} className={styles.tr}>
-                  <td className={styles.td}>
+                  <td className={styles.td} data-label="Nama Barang">
                     <div className={styles.productName}>{product.name}</div>
                   </td>
-                  <td className={styles.td}>{getCategoryName(product.category_id)}</td>
-                  <td className={styles.td}>{formatRupiah(product.price_sell)}</td>
-                  <td className={styles.td}>
+                  <td className={styles.td} data-label="Kategori">
+                    {getCategoryName(product.category_id)}
+                  </td>
+                  <td className={styles.td} data-label="Harga Jual">
+                    {formatRupiah(product.price_sell)}
+                  </td>
+                  <td className={styles.td} data-label="Stok">
                     <span className={`${styles.stockBadge} ${stockClass}`}>
                       {product.stock} {product.unit}
                     </span>
                   </td>
-                  <td className={styles.td}>
+                  <td className={styles.td} data-label="Aksi">
                     <button className={styles.actionBtn} onClick={handleEdit}>
                       Edit
                     </button>

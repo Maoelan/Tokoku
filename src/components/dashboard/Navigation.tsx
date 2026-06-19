@@ -27,34 +27,45 @@ export default function Navigation({ user }: { user: User }) {
   }
 
   return (
-    <nav className={styles.nav}>
-      <div className={styles.header}>
-        <img src="/images/logo.png" alt="Tokoku" className={styles.logo} />
-        <div className={styles.title}>Tokoku Dashboard</div>
-      </div>
-
-      {navLinks.map((link) => {
-        const isActive = pathname === link.href;
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`}
-          >
-            <div className={styles.icon}>{link.icon}</div>
-            <span>{link.label}</span>
-          </Link>
-        );
-      })}
-
-      <div className={styles.userInfo}>
-        <div className={styles.avatar}>{user.name.charAt(0)}</div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <span className={styles.userName}>{user.name}</span>
-          <span className={styles.userRole}>{user.role}</span>
-          <button onClick={handleLogout} className={styles.logoutBtn}>Keluar</button>
+    <>
+      {/* Mobile Top Header */}
+      <div className={styles.mobileHeader}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <img src="/images/logo.png" alt="Tokoku" className={styles.mobileLogo} />
+          <span style={{ fontWeight: 800 }}>Tokoku</span>
         </div>
+        <button onClick={handleLogout} className={styles.mobileLogoutBtn}>Keluar</button>
       </div>
-    </nav>
+
+      <nav className={styles.nav}>
+        <div className={styles.header}>
+          <img src="/images/logo.png" alt="Tokoku" className={styles.logo} />
+          <div className={styles.title}>Tokoku Dashboard</div>
+        </div>
+
+        {navLinks.map((link) => {
+          const isActive = pathname === link.href;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`}
+            >
+              <div className={styles.icon}>{link.icon}</div>
+              <span>{link.label}</span>
+            </Link>
+          );
+        })}
+
+        <div className={styles.userInfo}>
+          <div className={styles.avatar}>{user.name.charAt(0)}</div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <span className={styles.userName}>{user.name}</span>
+            <span className={styles.userRole}>{user.role}</span>
+            <button onClick={handleLogout} className={styles.logoutBtn}>Keluar</button>
+          </div>
+        </div>
+      </nav>
+    </>
   );
 }
