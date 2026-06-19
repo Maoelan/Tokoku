@@ -268,9 +268,33 @@ export default function DaftarBarang() {
                       </span>
                     </td>
                     <td className={styles.td} data-label="Aksi">
-                      <button className={styles.actionBtn} onClick={() => openEditModal(product)}>
-                        Edit
-                      </button>
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <button className={styles.actionBtn} onClick={() => openEditModal(product)}>
+                          Edit
+                        </button>
+                        <button 
+                          className={styles.actionBtn} 
+                          style={{ backgroundColor: "var(--danger)", borderColor: "var(--danger)" }}
+                          onClick={async () => {
+                            if (confirm(`Apakah Anda yakin ingin menghapus ${product.name}?`)) {
+                              try {
+                                const res = await fetch(`/api/products/${product.id}`, { method: "DELETE" });
+                                const data = await res.json();
+                                if (data.success) {
+                                  alert("Barang berhasil dihapus!");
+                                  fetchData();
+                                } else {
+                                  alert("Gagal menghapus: " + data.error);
+                                }
+                              } catch (e) {
+                                alert("Terjadi kesalahan sistem");
+                              }
+                            }
+                          }}
+                        >
+                          Hapus
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

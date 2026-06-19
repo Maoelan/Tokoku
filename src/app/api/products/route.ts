@@ -21,7 +21,8 @@ export async function GET() {
         isActive: products.isActive,
       })
       .from(products)
-      .leftJoin(categories, eq(products.categoryId, categories.id));
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .where(eq(products.isActive, true));
       
     return NextResponse.json(data);
   } catch (error) {
