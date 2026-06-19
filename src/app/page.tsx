@@ -193,22 +193,6 @@ export default function Home() {
         )}
       </section>
 
-      {/* Location Section */}
-      <section className={`${styles.catalog} container`} style={{ marginTop: "1rem" }}>
-        <h2 className={styles.sectionTitle}>📍 Lokasi Kami</h2>
-        <div style={{ borderRadius: "12px", overflow: "hidden", boxShadow: "var(--card-shadow)" }}>
-          <iframe 
-            src="https://maps.google.com/maps?q=Sintung,%20Pringgarata,%20Lombok%20Tengah&t=&z=14&ie=UTF8&iwloc=&output=embed" 
-            width="100%" 
-            height="350" 
-            style={{ border: 0, display: "block" }} 
-            allowFullScreen 
-            loading="lazy" 
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className={styles.footer}>
         <div className={`container ${styles.footerContent}`}>
