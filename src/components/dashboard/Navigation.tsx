@@ -29,6 +29,7 @@ export default function Navigation({ user }: { user: User }) {
   // Admin-only links
   if (user.role === "admin") {
     navLinks.push({ href: "/dashboard/barang-masuk", label: "Restok", icon: "📥" });
+    navLinks.push({ href: "/dashboard/kategori", label: "Kategori", icon: "🏷️" });
   }
 
   return (
