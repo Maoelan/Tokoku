@@ -25,6 +25,8 @@ type Category = {
 
 export default function Home() {
   const [activeCategoryId, setActiveCategoryId] = useState<number | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [displayLimit, setDisplayLimit] = useState(12);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,15 +51,19 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const filteredProducts =
-    activeCategoryId === "all"
-      ? products.filter((p) => p.showOnLanding && p.isActive)
-      : products.filter(
-          (p) =>
-            p.categoryId === activeCategoryId &&
-            p.showOnLanding &&
-            p.isActive,
-        );
+  const filteredProducts = products.filter((p) => {
+    if (!p.showOnLanding || !p.isActive) return false;
+    
+    // Category filter
+    if (activeCategoryId !== "all" && p.categoryId !== activeCategoryId) return false;
+
+    // Search filter
+    if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+
+    return true;
+  });
+
+  const displayedProducts = filteredProducts.slice(0, displayLimit);
 
   const formatRupiah = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -131,11 +137,38 @@ export default function Home() {
       <section className={`${styles.catalog} container`}>
         <h2 className={styles.sectionTitle}>📦 Produk Kami</h2>
 
+        {/* Search Bar */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
+          <input
+            type="text"
+            placeholder="Cari barang (misal: Surya, Kopi, Gula)"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setDisplayLimit(12); // Reset limit on search
+            }}
+            style={{
+              width: "100%",
+              maxWidth: "500px",
+              padding: "0.875rem 1.25rem",
+              borderRadius: "9999px",
+              border: "1px solid var(--border)",
+              backgroundColor: "var(--surface)",
+              fontSize: "1rem",
+              outline: "none",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          />
+        </div>
+
         {/* Filters */}
         <div className={styles.filters}>
           <button
             className={`${styles.filterBtn} ${activeCategoryId === "all" ? styles.filterBtnActive : ""}`}
-            onClick={() => setActiveCategoryId("all")}
+            onClick={() => {
+              setActiveCategoryId("all");
+              setDisplayLimit(12); // Reset limit on filter change
+            }}
           >
             Semua
           </button>
@@ -143,7 +176,10 @@ export default function Home() {
             <button
               key={cat.id}
               className={`${styles.filterBtn} ${activeCategoryId === cat.id ? styles.filterBtnActive : ""}`}
-              onClick={() => setActiveCategoryId(cat.id)}
+              onClick={() => {
+                setActiveCategoryId(cat.id);
+                setDisplayLimit(12); // Reset limit on filter change
+              }}
             >
               {cat.name}
             </button>
@@ -158,7 +194,7 @@ export default function Home() {
           <>
             {/* Product Grid */}
             <div className={styles.grid}>
-              {filteredProducts.map((product) => (
+              {displayedProducts.map((product) => (
                 <div key={product.id} className={styles.card}>
                   <div className={styles.cardImgPlaceholder}>
                     {product.imageUrl ? (
@@ -178,15 +214,52 @@ export default function Home() {
               ))}
             </div>
 
+            {/* Load More Button */}
+            {filteredProducts.length > displayedProducts.length && (
+              <div style={{ textAlign: "center", marginTop: "3rem" }}>
+                <button
+                  onClick={() => setDisplayLimit((prev) => prev + 12)}
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    border: "1px solid var(--primary)",
+                    color: "var(--primary)",
+                    padding: "0.75rem 2rem",
+                    borderRadius: "9999px",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--primary)";
+                    e.currentTarget.style.color = "white";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--surface)";
+                    e.currentTarget.style.color = "var(--primary)";
+                  }}
+                >
+                  Lihat Lebih Banyak ({filteredProducts.length - displayedProducts.length} lagi) ⬇️
+                </button>
+              </div>
+            )}
+
             {filteredProducts.length === 0 && (
               <div
                 style={{
                   textAlign: "center",
                   color: "var(--text-muted)",
                   marginTop: "2rem",
+                  padding: "3rem 1rem",
+                  backgroundColor: "var(--surface)",
+                  borderRadius: "16px",
+                  border: "1px dashed var(--border)",
                 }}
               >
-                Belum ada produk di kategori ini.
+                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔍</div>
+                <h3 style={{ marginBottom: "0.5rem", color: "var(--text-main)" }}>Barang Tidak Ditemukan</h3>
+                <p>Coba gunakan kata kunci lain atau pilih kategori &quot;Semua&quot;.</p>
               </div>
             )}
           </>
