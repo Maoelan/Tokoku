@@ -48,7 +48,13 @@ export default function Home() {
         }
 
         if (Array.isArray(categoriesData)) {
-          setCategories(categoriesData);
+          // Sort to ensure "Lain-lain" is always at the very end
+          const sortedCategories = [...categoriesData].sort((a, b) => {
+            if (a.name.toLowerCase() === "lain-lain") return 1;
+            if (b.name.toLowerCase() === "lain-lain") return -1;
+            return 0;
+          });
+          setCategories(sortedCategories);
         } else {
           console.error("Categories API error:", categoriesData);
           setCategories([]);
