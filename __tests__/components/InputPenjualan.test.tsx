@@ -22,11 +22,20 @@ const mockProducts = [
   },
 ];
 
-global.fetch = jest.fn(() =>
-  Promise.resolve({
+const mockCategories = [
+  { id: 1, name: "Sembako", sortOrder: 1 },
+];
+
+global.fetch = jest.fn((url: string) => {
+  if (url === "/api/categories") {
+    return Promise.resolve({
+      json: () => Promise.resolve(mockCategories),
+    });
+  }
+  return Promise.resolve({
     json: () => Promise.resolve(mockProducts),
-  })
-) as jest.Mock;
+  });
+}) as jest.Mock;
 
 describe("InputPenjualan Component - Strict Stock Validation", () => {
   beforeEach(() => {
