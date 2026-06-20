@@ -139,8 +139,8 @@ export default function DaftarBarang() {
       } else {
         alert("Gagal upload gambar: " + data.error);
       }
-    } catch (error) {
-      alert("Terjadi kesalahan saat upload gambar.");
+    } catch {
+      alert("❌ Terjadi kesalahan saat menghapus gambar.");
     } finally {
       setUploadingImage(false);
     }
@@ -191,7 +191,7 @@ export default function DaftarBarang() {
         alert("❌ Gagal: " + (result.error || "Unknown error"));
       }
     } catch {
-      alert("❌ Terjadi kesalahan. Coba lagi.");
+      alert("Terjadi kesalahan jaringan");
     } finally {
       setSaving(false);
     }
@@ -286,7 +286,7 @@ export default function DaftarBarang() {
                                 } else {
                                   alert("Gagal menghapus: " + data.error);
                                 }
-                              } catch (e) {
+                              } catch {
                                 alert("Terjadi kesalahan sistem");
                               }
                             }

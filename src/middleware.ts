@@ -4,13 +4,20 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   
-  // Protect all API routes except login and public assets
-  if (path.startsWith('/api/') && !path.startsWith('/api/login') && !path.startsWith('/api/upload')) {
-    const session = request.cookies.get('tokoku_session');
+  // Protect /dashboard routes and /api routes
+  const isApiRoute = path.startsWith('/api/');
+  const isDashboardRoute = path.startsWith('/dashboard');
+  
+  if (isApiRoute || isDashboardRoute) {
+    // Public routes that don't need auth
+    if (path.startsWith('/api/login')) {
+      return NextResponse.next();
+    }
+
     const method = request.method;
     
     // Allow public access to read (GET) products and categories for the landing page
-    if (method === 'GET' && (path === '/api/products' || path === '/api/categories')) {
+    if (isApiRoute && method === 'GET' && (path === '/api/products' || path === '/api/categories')) {
       return NextResponse.next();
     }
 
@@ -19,7 +26,12 @@ export function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
+    const session = request.cookies.get('tokoku_session');
+    
     if (!session) {
+      if (isDashboardRoute) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
       return NextResponse.json({ error: 'Unauthorized Access. Please login.' }, { status: 401 });
     }
   }
@@ -28,5 +40,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: ['/api/:path*', '/dashboard/:path*'],
 }

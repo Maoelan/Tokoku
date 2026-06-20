@@ -40,7 +40,10 @@ export default function KategoriPage() {
   };
 
   useEffect(() => {
-    fetchData();
+    const load = async () => {
+      await fetchData();
+    };
+    load();
   }, []);
 
   const openModal = (category?: Category) => {
@@ -79,7 +82,7 @@ export default function KategoriPage() {
 
       closeModal();
       fetchData();
-    } catch (error) {
+    } catch {
       alert("Terjadi kesalahan jaringan");
     } finally {
       setIsSubmitting(false);
@@ -97,7 +100,7 @@ export default function KategoriPage() {
         } else {
           alert("Gagal menghapus: " + data.error);
         }
-      } catch (e) {
+      } catch {
         alert("Terjadi kesalahan sistem");
       }
     }

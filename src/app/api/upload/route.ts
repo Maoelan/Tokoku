@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     
     // Upload to Supabase Storage bucket named 'products'
-    const { data, error } = await supabase
+    const { error } = await supabase
       .storage
       .from("products")
       .upload(fileName, buffer, {

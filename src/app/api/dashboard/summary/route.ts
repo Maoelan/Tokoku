@@ -28,7 +28,9 @@ export async function GET() {
       itemsToday: Number(itemsToday),
       lowStockCount: Number(lowStockCount),
     });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch summary" }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to fetch dashboard summary" },
+      { status: 500 });
   }
 }

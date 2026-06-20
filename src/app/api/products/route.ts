@@ -25,7 +25,7 @@ export async function GET() {
       .where(eq(products.isActive, true));
       
     return NextResponse.json(data);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
   }
 }

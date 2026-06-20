@@ -168,7 +168,7 @@ export default function InputPenjualan() {
       } else {
         alert("❌ Gagal menyimpan: " + (result.error || "Unknown error"));
       }
-    } catch (error) {
+    } catch {
       alert("❌ Gagal menyimpan penjualan. Coba lagi.");
     } finally {
       setSaving(false);

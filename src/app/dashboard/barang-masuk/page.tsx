@@ -69,8 +69,8 @@ export default function InputBarangMasuk() {
       } else {
         alert("❌ Gagal menyimpan: " + (result.error || "Unknown error"));
       }
-    } catch (error) {
-      alert("❌ Gagal menyimpan barang masuk. Coba lagi.");
+    } catch {
+      alert("Terjadi kesalahan sistem");
     } finally {
       setSaving(false);
     }

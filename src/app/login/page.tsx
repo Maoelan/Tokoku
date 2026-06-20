@@ -32,7 +32,7 @@ export default function Login() {
         alert("❌ " + data.error);
         setPin("");
       }
-    } catch (error) {
+    } catch {
       alert("Terjadi kesalahan sistem.");
     } finally {
       setLoading(false);
