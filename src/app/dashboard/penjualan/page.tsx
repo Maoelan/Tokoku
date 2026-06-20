@@ -10,6 +10,10 @@ type Product = {
   stock: number;
   priceSell: number;
   isActive: boolean;
+  category?: {
+    id: number;
+    name: string;
+  };
 };
 
 type CartItem = {
@@ -29,7 +33,11 @@ export default function InputPenjualan() {
       try {
         const res = await fetch("/api/products");
         const data = await res.json();
-        setProducts(data);
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          setProducts([]);
+        }
       } catch (error) {
         console.error("Failed to fetch products:", error);
       } finally {
@@ -43,6 +51,14 @@ export default function InputPenjualan() {
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) && p.isActive
   );
+
+  // Group filtered products by category name
+  const groupedProducts = filteredProducts.reduce((acc, product) => {
+    const catName = product.category?.name || "Tanpa Kategori";
+    if (!acc[catName]) acc[catName] = [];
+    acc[catName].push(product);
+    return acc;
+  }, {} as Record<string, Product[]>);
 
   const formatRupiah = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -161,25 +177,38 @@ export default function InputPenjualan() {
               <div className={styles.emptyCart}>Memuat barang...</div>
             ) : (
               <>
-                {filteredProducts.map((product) => (
-                  <div key={product.id} className={styles.productItem}>
-                    <div className={styles.productInfo}>
-                      <span className={styles.productName}>{product.name}</span>
-                      <span className={styles.productPrice}>
-                        {formatRupiah(product.priceSell)}
-                      </span>
-                      <span className={styles.productStock}>
-                        Stok: {product.stock} {product.unit}
-                      </span>
-                    </div>
-                    <button
-                      className={styles.addButton}
-                      onClick={() => addToCart(product)}
-                      disabled={product.stock <= 0}
-                      title="Tambah ke struk"
-                    >
-                      +
-                    </button>
+                {Object.entries(groupedProducts)
+                  .sort(([catA], [catB]) => {
+                    if (catA.toLowerCase() === "lain-lain" || catA.toLowerCase() === "tanpa kategori") return 1;
+                    if (catB.toLowerCase() === "lain-lain" || catB.toLowerCase() === "tanpa kategori") return -1;
+                    return catA.localeCompare(catB);
+                  })
+                  .map(([categoryName, items]) => (
+                  <div key={categoryName} style={{ marginBottom: "1.5rem" }}>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: "bold", marginBottom: "0.5rem", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", paddingBottom: "0.25rem" }}>
+                      {categoryName}
+                    </h3>
+                    {items.map((product) => (
+                      <div key={product.id} className={styles.productItem}>
+                        <div className={styles.productInfo}>
+                          <span className={styles.productName}>{product.name}</span>
+                          <span className={styles.productPrice}>
+                            {formatRupiah(product.priceSell)}
+                          </span>
+                          <span className={styles.productStock}>
+                            Stok: {product.stock} {product.unit}
+                          </span>
+                        </div>
+                        <button
+                          className={styles.addButton}
+                          onClick={() => addToCart(product)}
+                          disabled={product.stock <= 0}
+                          title="Tambah ke struk"
+                        >
+                          +
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 ))}
                 {filteredProducts.length === 0 && (
