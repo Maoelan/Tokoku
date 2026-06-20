@@ -3,6 +3,12 @@
 import { useState, useEffect } from "react";
 import styles from "./penjualan.module.css";
 
+type Category = {
+  id: number;
+  name: string;
+  sortOrder: number;
+};
+
 type Product = {
   id: number;
   name: string;
@@ -10,6 +16,7 @@ type Product = {
   stock: number;
   priceSell: number;
   isActive: boolean;
+  categoryId: number;
   category?: {
     id: number;
     name: string;
@@ -23,42 +30,56 @@ type CartItem = {
 
 export default function InputPenjualan() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategoryId, setActiveCategoryId] = useState<number | "all">("all");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/products");
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setProducts(data);
+        const [productsRes, categoriesRes] = await Promise.all([
+          fetch("/api/products"),
+          fetch("/api/categories")
+        ]);
+        const productsData = await productsRes.json();
+        const categoriesData = await categoriesRes.json();
+
+        if (Array.isArray(productsData)) {
+          setProducts(productsData);
         } else {
           setProducts([]);
         }
+
+        if (Array.isArray(categoriesData)) {
+          const sortedCats = [...categoriesData].sort((a, b) => {
+            if (a.name.toLowerCase() === "lain-lain" || a.name.toLowerCase() === "tanpa kategori") return 1;
+            if (b.name.toLowerCase() === "lain-lain" || b.name.toLowerCase() === "tanpa kategori") return -1;
+            return 0;
+          });
+          setCategories(sortedCats);
+        } else {
+          setCategories([]);
+        }
       } catch (error) {
-        console.error("Failed to fetch products:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchProducts();
+    fetchData();
   }, []);
 
   const filteredProducts = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) && p.isActive
+    (p) => {
+      if (!p.isActive) return false;
+      if (activeCategoryId !== "all" && p.categoryId !== activeCategoryId) return false;
+      if (searchTerm && !p.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+      return true;
+    }
   );
-
-  // Group filtered products by category name
-  const groupedProducts = filteredProducts.reduce((acc, product) => {
-    const catName = product.category?.name || "Tanpa Kategori";
-    if (!acc[catName]) acc[catName] = [];
-    acc[catName].push(product);
-    return acc;
-  }, {} as Record<string, Product[]>);
 
   const formatRupiah = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -172,43 +193,48 @@ export default function InputPenjualan() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
+          <div className={styles.filters}>
+            <button
+              className={`${styles.filterBtn} ${activeCategoryId === "all" ? styles.filterBtnActive : ""}`}
+              onClick={() => setActiveCategoryId("all")}
+            >
+              Semua
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                className={`${styles.filterBtn} ${activeCategoryId === cat.id ? styles.filterBtnActive : ""}`}
+                onClick={() => setActiveCategoryId(cat.id)}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+
           <div className={styles.productList}>
             {loading ? (
               <div className={styles.emptyCart}>Memuat barang...</div>
             ) : (
               <>
-                {Object.entries(groupedProducts)
-                  .sort(([catA], [catB]) => {
-                    if (catA.toLowerCase() === "lain-lain" || catA.toLowerCase() === "tanpa kategori") return 1;
-                    if (catB.toLowerCase() === "lain-lain" || catB.toLowerCase() === "tanpa kategori") return -1;
-                    return catA.localeCompare(catB);
-                  })
-                  .map(([categoryName, items]) => (
-                  <div key={categoryName} style={{ marginBottom: "1.5rem" }}>
-                    <h3 style={{ fontSize: "1.1rem", fontWeight: "bold", marginBottom: "0.5rem", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", paddingBottom: "0.25rem" }}>
-                      {categoryName}
-                    </h3>
-                    {items.map((product) => (
-                      <div key={product.id} className={styles.productItem}>
-                        <div className={styles.productInfo}>
-                          <span className={styles.productName}>{product.name}</span>
-                          <span className={styles.productPrice}>
-                            {formatRupiah(product.priceSell)}
-                          </span>
-                          <span className={styles.productStock}>
-                            Stok: {product.stock} {product.unit}
-                          </span>
-                        </div>
-                        <button
-                          className={styles.addButton}
-                          onClick={() => addToCart(product)}
-                          disabled={product.stock <= 0}
-                          title="Tambah ke struk"
-                        >
-                          +
-                        </button>
-                      </div>
-                    ))}
+                {filteredProducts.map((product) => (
+                  <div key={product.id} className={styles.productItem}>
+                    <div className={styles.productInfo}>
+                      <span className={styles.productName}>{product.name}</span>
+                      <span className={styles.productPrice}>
+                        {formatRupiah(product.priceSell)}
+                      </span>
+                      <span className={styles.productStock}>
+                        Stok: {product.stock} {product.unit}
+                      </span>
+                    </div>
+                    <button
+                      className={styles.addButton}
+                      onClick={() => addToCart(product)}
+                      disabled={product.stock <= 0}
+                      title="Tambah ke struk"
+                    >
+                      +
+                    </button>
                   </div>
                 ))}
                 {filteredProducts.length === 0 && (
