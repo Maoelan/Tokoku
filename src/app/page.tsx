@@ -113,12 +113,15 @@ export default function Home() {
             harga terbaik.
           </p>
 
-          <div className={styles.heroInfo}>
-            <div className={styles.heroInfoItem}>
-              <span>📍</span> Sintung, Lombok Tengah
+          <div className={styles.featureBar}>
+            <div className={styles.featureItem}>
+              <span className={styles.featureIcon}>⚡</span> Pelayanan Cepat
             </div>
-            <div className={styles.heroInfoItem}>
-              <span>🕐</span> Buka: 10.00 - 20.00
+            <div className={styles.featureItem}>
+              <span className={styles.featureIcon}>💯</span> Harga Jujur
+            </div>
+            <div className={styles.featureItem}>
+              <span className={styles.featureIcon}>🛒</span> Stok Lengkap
             </div>
           </div>
 
@@ -138,25 +141,15 @@ export default function Home() {
         <h2 className={styles.sectionTitle}>📦 Produk Kami</h2>
 
         {/* Search Bar */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
+        <div className={styles.searchContainer}>
           <input
             type="text"
+            className={styles.searchInput}
             placeholder="Cari barang (misal: Surya, Kopi, Gula)"
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setDisplayLimit(12); // Reset limit on search
-            }}
-            style={{
-              width: "100%",
-              maxWidth: "500px",
-              padding: "0.875rem 1.25rem",
-              borderRadius: "9999px",
-              border: "1px solid var(--border)",
-              backgroundColor: "var(--surface)",
-              fontSize: "1rem",
-              outline: "none",
-              boxShadow: "var(--shadow-sm)",
             }}
           />
         </div>
@@ -218,27 +211,8 @@ export default function Home() {
             {filteredProducts.length > displayedProducts.length && (
               <div style={{ textAlign: "center", marginTop: "3rem" }}>
                 <button
+                  className={styles.loadMoreBtn}
                   onClick={() => setDisplayLimit((prev) => prev + 12)}
-                  style={{
-                    backgroundColor: "var(--surface)",
-                    border: "1px solid var(--primary)",
-                    color: "var(--primary)",
-                    padding: "0.75rem 2rem",
-                    borderRadius: "9999px",
-                    fontWeight: 700,
-                    fontSize: "1rem",
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    boxShadow: "var(--shadow-sm)",
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--primary)";
-                    e.currentTarget.style.color = "white";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--surface)";
-                    e.currentTarget.style.color = "var(--primary)";
-                  }}
                 >
                   Lihat Lebih Banyak ({filteredProducts.length - displayedProducts.length} lagi) ⬇️
                 </button>
@@ -246,19 +220,9 @@ export default function Home() {
             )}
 
             {filteredProducts.length === 0 && (
-              <div
-                style={{
-                  textAlign: "center",
-                  color: "var(--text-muted)",
-                  marginTop: "2rem",
-                  padding: "3rem 1rem",
-                  backgroundColor: "var(--surface)",
-                  borderRadius: "16px",
-                  border: "1px dashed var(--border)",
-                }}
-              >
-                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔍</div>
-                <h3 style={{ marginBottom: "0.5rem", color: "var(--text-main)" }}>Barang Tidak Ditemukan</h3>
+              <div className={styles.emptyState}>
+                <div className={styles.emptyStateIcon}>🔍</div>
+                <h3 className={styles.emptyStateTitle}>Barang Tidak Ditemukan</h3>
                 <p>Coba gunakan kata kunci lain atau pilih kategori &quot;Semua&quot;.</p>
               </div>
             )}
